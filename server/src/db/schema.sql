@@ -173,20 +173,33 @@ CREATE TABLE IF NOT EXISTS event_sponsors (
 -- =====================================================
 
 CREATE TABLE IF NOT EXISTS sponsor_inquiries (
+
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+
     name VARCHAR(150) NOT NULL,
+
     email VARCHAR(150) NOT NULL,
+
     company VARCHAR(255),
-    enquiry_type VARCHAR(100) NOT NULL,
+
+    enquiry_type_id INTEGER NOT NULL,
+
     CONSTRAINT fk_sponsor_enquiry_type
-    FOREIGN KEY(enquiry_type_id)
-    REFERENCES enquiry_types(id),
+    FOREIGN KEY (enquiry_type_id)
+    REFERENCES enquiry_types(id)
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT,
 
     message TEXT,
+
     status VARCHAR(50) DEFAULT 'pending',
+
     admin_notes TEXT,
+
     created_at TIMESTAMP DEFAULT NOW(),
+
     updated_at TIMESTAMP DEFAULT NOW()
+
 );
 
 -- =====================================================
