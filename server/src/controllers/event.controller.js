@@ -125,19 +125,41 @@ export const getEventById = async (req, res) => {
   try {
     const { id } = req.params;
     const result = await pool.query(
-      `
-      SELECT 
-          e.*, 
-          s.name AS status,
+  `
+  SELECT
+      e.*,
+      s.name AS status,
 
-          (${lifecycleCase}) AS lifecycle
+      (${lifecycleCase}) AS lifecycle,
 
-      FROM events e
-      LEFT JOIN event_status s ON e.status_id = s.id
-      WHERE e.id = $1 AND e.archived=false
-      `,
-      [id],
-    );
+      COUNT(DISTINCT er.id)::INT AS registration_count,
+      COUNT(DISTINCT sp.id)::INT AS speaker_count,
+      COUNT(DISTINCT spo.id)::INT AS sponsor_count
+
+  FROM events e
+
+  LEFT JOIN event_status s
+    ON e.status_id = s.id
+
+  LEFT JOIN event_registrations er
+    ON er.event_id = e.id
+
+  LEFT JOIN event_speakers sp
+    ON sp.event_id = e.id
+
+  LEFT JOIN event_sponsors spo
+    ON spo.event_id = e.id
+
+  WHERE
+    e.id = $1
+    AND e.archived = FALSE
+
+  GROUP BY
+    e.id,
+    s.name
+  `,
+  [id],
+);
 
     if (!result.rows.length) {
       return res.status(404).json({
@@ -988,27 +1010,3 @@ export const getAllSponsors = async (req, res) => {
     });
   }
 };
-
-
-// export const getAllSponsors = async(req, res)=>{
-//   try{
-//     const result = await pool.query(
-//       `
-//       SELECT DISTINCT ON (sponsor_name)
-//         id, sponsor_name, logo_url, website_url
-//       FROM event_sponsors
-//       ORDER BY sponsor_name, id DESC
-//       `);
-
-//       res.json({
-//         success: true,
-//         data: result.rows
-//       })
-//   }catch(error){
-//     console.error("Get All Sponsors Error:", error);
-//     res.status(500).json({
-//       success: false,
-//       message: error.message
-//     });
-//   }
-// };
