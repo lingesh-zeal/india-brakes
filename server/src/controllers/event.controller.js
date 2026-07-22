@@ -968,14 +968,12 @@ export const getAllSponsors = async (req, res) => {
       FROM event_sponsors es
       INNER JOIN events e
         ON es.event_id = e.id
+      INNER JOIN event_status st
+        ON e.status_id = st.id
       WHERE
         e.archived = FALSE
-        AND e.status_id = (
-          SELECT id
-          FROM event_status
-          WHERE name = 'Published'
-        )
-      ORDER BY es.sponsor_name, es.id DESC
+        AND st.name = 'Published'
+      ORDER BY es.sponsor_name, es.id DESC;
     `);
 
     res.json({
