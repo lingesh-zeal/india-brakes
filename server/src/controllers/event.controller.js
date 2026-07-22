@@ -957,25 +957,60 @@ export const restoreEvent = async (req, res) => {
   }
 };
 
-export const getAllSponsors = async(req, res)=>{
-  try{
-    const result = await pool.query(
-      `
-      SELECT DISTINCT ON (sponsor_name)
-        id, sponsor_name, logo_url, website_url
-      FROM event_sponsors
-      ORDER BY sponsor_name, id DESC
-      `);
+export const getAllSponsors = async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT DISTINCT ON (es.sponsor_name)
+        es.id,
+        es.sponsor_name,
+        es.logo_url,
+        es.website_url
+      FROM event_sponsors es
+      INNER JOIN events e
+        ON es.event_id = e.id
+      WHERE
+        e.archived = FALSE
+        AND e.status_id = (
+          SELECT id
+          FROM event_status
+          WHERE name = 'Published'
+        )
+      ORDER BY es.sponsor_name, es.id DESC
+    `);
 
-      res.json({
-        success: true,
-        data: result.rows
-      })
-  }catch(error){
+    res.json({
+      success: true,
+      data: result.rows,
+    });
+  } catch (error) {
     console.error("Get All Sponsors Error:", error);
     res.status(500).json({
       success: false,
-      message: error.message
+      message: error.message,
     });
   }
 };
+
+
+// export const getAllSponsors = async(req, res)=>{
+//   try{
+//     const result = await pool.query(
+//       `
+//       SELECT DISTINCT ON (sponsor_name)
+//         id, sponsor_name, logo_url, website_url
+//       FROM event_sponsors
+//       ORDER BY sponsor_name, id DESC
+//       `);
+
+//       res.json({
+//         success: true,
+//         data: result.rows
+//       })
+//   }catch(error){
+//     console.error("Get All Sponsors Error:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: error.message
+//     });
+//   }
+// };

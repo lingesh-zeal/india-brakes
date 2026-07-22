@@ -235,7 +235,7 @@ export default function CreateEventModal({ open, onClose, onSuccess }) {
                   />
                 </div>
 
-                <div>
+                {/* <div>
                   <label className="block mb-2 text-xs font-bold text-slate-700 uppercase tracking-wide">
                     Status
                   </label>
@@ -250,7 +250,7 @@ export default function CreateEventModal({ open, onClose, onSuccess }) {
                     <option value="4">Registration Closed</option>
                     <option value="5">Completed</option>
                   </select>
-                </div>
+                </div> */}
 
                 <div>
                   <label className="block mb-2 text-xs font-bold text-slate-700 uppercase tracking-wide">
