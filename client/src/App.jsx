@@ -11,6 +11,7 @@ import EventDetail from "./pages/EventDetail";
 import EventRegistrations from "./pages/EventRegistrations";
 import Sponsors from "./pages/Sponsors";
 import WelcomeCMS from "./pages/WelcomeCMS";
+import HeroBanner from "./pages/HeroBanner";
 
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
               <Route path="sponsors" element={<Sponsors/>} />
               <Route path="/events/:id/registrations" element={<EventRegistrations />} />
               <Route path={"/welcome"} element={<WelcomeCMS/>}/>
+              <Route path={"hero-banner"} element={<HeroBanner/>}/>
             </Route>
           </Route>
         </Routes>

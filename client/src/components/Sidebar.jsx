@@ -1,4 +1,4 @@
-import { FaBars, FaCalendarAlt, FaHandshake, FaHome,FaImages, FaSignOutAlt } from "react-icons/fa";
+import { FaBars, FaCalendarAlt, FaCamera, FaHandshake, FaHome,FaImages, FaSignOutAlt } from "react-icons/fa";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
 const Sidebar = ({ collapsed, setCollapsed }) => {
@@ -33,7 +33,13 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
       name: "Welcome CMS",
       path: "/welcome",
       icons: <FaImages />
+    },
+    {
+      name: "Hero Banner",
+      path: "/hero-banner",
+      icons: <FaCamera />
     }
+
   ];
 
   return (

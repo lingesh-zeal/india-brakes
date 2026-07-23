@@ -11,6 +11,10 @@ import multer from "multer";
 export const errorHandler = (err, req, res, next) => {
   console.error(err);
 
+  if(res.headersSent){
+    return next(err);
+  }
+
   if (err instanceof multer.MulterError) {
     return res.status(400).json({
       success: false,

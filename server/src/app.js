@@ -12,6 +12,7 @@ import dashboardRoutes from "./routes/dashboard.routes.js";
 import sponsorInquiryRoutes from "./routes/sponsor.routes.js";
 import enquiryTypeRoutes from "./routes/enquiryType.routes.js";
 import welcomeRoutes from "./routes/welcome.routes.js"
+import heroBannerRoutes from "./routes/heroBanner.routes.js";
 
 const app = express();
 
@@ -27,17 +28,16 @@ app.use(express.urlencoded({extended: true}));
 app.use(morgan("dev"));
 
 const uploadsPath = path.join(process.cwd(), "uploads");
-
-
-// Routes
-app.use("/api/auth", authRoutes);
-app.use("/api/events", eventRoutes);
-
 // Static uploads
 app.use(
   "/uploads",
   express.static(uploadsPath)
 );
+
+// Routes
+app.use("/api/auth", authRoutes);
+app.use("/api/events", eventRoutes);
+
 
 // Health check
 app.get("/api/health", (req, res) => {
@@ -59,7 +59,9 @@ app.use(
 
 app.use("/api/sponsors", sponsorInquiryRoutes);
 app.use("/api/enquiry-types", enquiryTypeRoutes);
-app.use("/api/welcome-cms", welcomeRoutes)
+app.use("/api/welcome-cms", welcomeRoutes);
+
+app.use("/api/hero-banner", heroBannerRoutes);
 // Global Error handler (must be last)
 app.use(errorHandler);
 

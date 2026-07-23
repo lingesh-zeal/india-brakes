@@ -23,6 +23,9 @@ import axios from "axios";
 
 export const BASE_URL = "https://indiabrakes.onrender.com/api";
 export const BASE_IMG = "https://indiabrakes.onrender.com/";
+
+// export const BASE_URL = "http://localhost:5000/api";
+// export const BASE_IMG = "http://localhost:5000/";
 const api = axios.create({
     baseURL:BASE_URL,
 });

@@ -20,3 +20,4 @@ export const updateImage = (id, formData) =>
 
 export const deleteImage = (id) =>
   api.delete(`/welcome-cms/admin/carousel/${id}`);
+
