@@ -13,7 +13,7 @@ import sponsorInquiryRoutes from "./routes/sponsor.routes.js";
 import enquiryTypeRoutes from "./routes/enquiryType.routes.js";
 import welcomeRoutes from "./routes/welcome.routes.js"
 import heroBannerRoutes from "./routes/heroBanner.routes.js";
-
+import marqueeSponsorRoutes from "./routes/marqueeSponsor.routes.js";
 const app = express();
 
 // Middleware
@@ -62,6 +62,7 @@ app.use("/api/enquiry-types", enquiryTypeRoutes);
 app.use("/api/welcome-cms", welcomeRoutes);
 
 app.use("/api/hero-banner", heroBannerRoutes);
+app.use("/api/marquee", marqueeSponsorRoutes)
 // Global Error handler (must be last)
 app.use(errorHandler);
 

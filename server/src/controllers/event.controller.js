@@ -3,6 +3,7 @@ import slugify from "slugify";
 import { deleteFile } from "../utils/fileCleanup.js";
 import path from "path";
 import { lifecycleCase } from "../utils/eventLifecycleSql.js";
+import { count } from "console";
 
 /* =========================
    GET EVENTS
@@ -125,7 +126,7 @@ export const getEventById = async (req, res) => {
   try {
     const { id } = req.params;
     const result = await pool.query(
-  `
+      `
   SELECT
       e.*,
       s.name AS status,
@@ -158,8 +159,8 @@ export const getEventById = async (req, res) => {
     e.id,
     s.name
   `,
-  [id],
-);
+      [id],
+    );
 
     if (!result.rows.length) {
       return res.status(404).json({
@@ -840,48 +841,6 @@ export const deleteEvent = async (req, res) => {
   }
 };
 
-// export const updateEventStatus = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     const { status_id, archived } = req.body;
-
-//     let query = "UPDATE events SET ";
-//     const values = [];
-//     let idx = 1;
-
-//     if (status_id !== undefined) {
-//       query += `status_id = $${idx} `;
-//       values.push(status_id);
-//       idx++;
-//     }
-
-//     if (archived !== undefined) {
-//       if (idx > 1) query += ", ";
-//       query += `archived = $${idx} `;
-//       values.push(archived);
-//       idx++;
-//     }
-
-//     if (idx === 1) {
-//       return res.status(400).json({ success: false, message: "No valid fields provided" });
-//     }
-
-//     query += `WHERE id = $${idx} RETURNING *`;
-//     values.push(id);
-
-//     const result = await pool.query(query, values);
-
-//     if (!result.rowCount) {
-//       return res.status(404).json({ success: false, message: "Event not found" });
-//     }
-
-//     res.json({ success: true, data: result.rows[0], message: "Event updated successfully" });
-//   } catch (error) {
-//     console.error("Update Event Status Error:", error);
-//     res.status(500).json({ success: false, message: error.message });
-//   }
-// };
-
 export const updateEventStatus = async (req, res) => {
   try {
     const { id } = req.params;
@@ -892,12 +851,12 @@ export const updateEventStatus = async (req, res) => {
       [status],
     );
 
-    if(!statusResult.rows.length){
+    if (!statusResult.rows.length) {
       return res.status(400).json({
-        success: false, 
-        messahe: "Invalid status"
-      })
-    };
+        success: false,
+        messahe: "Invalid status",
+      });
+    }
 
     const result = await pool.query(
       `UPDATE events SET status_id=$1,
@@ -1010,3 +969,125 @@ export const getAllSponsors = async (req, res) => {
     });
   }
 };
+
+export const getAllSpeakers = async (req, res) => {
+  try {
+    const result = await pool.query(
+      `
+     SELECT
+      e.id AS event_id,
+      e.title AS event_title,
+      e.slug AS event_slug,
+      e.event_date,
+      e.event_end_date,
+
+      s.name AS status,
+
+      (${lifecycleCase}) AS lifecycle,
+
+      json_agg(
+        json_build_object(
+           'id', es.id,
+            'name', es.name,
+            'role', es.role,
+            'designation', es.designation,
+            'department', es.department,
+            'organization', es.organization,
+            'profile_image_url', es.profile_image_url,
+            'display_order', es.display_order
+            )
+            ORDER BY es.display_order
+      ) AS speakers
+
+    FROM events e
+
+INNER JOIN event_speakers es 
+    ON es.event_id = e.id
+
+INNER JOIN event_status s
+    ON e.status_id = s.id
+
+WHERE
+    e.status_id = 2
+    AND e.archived = FALSE
+
+GROUP BY 
+e.id,
+e.title,
+e.slug,
+e.event_date,
+e.event_end_date,
+s.name
+
+ORDER BY
+    e.event_date DESC;
+      `,
+    );
+
+    res.status(200).json({
+      success: true,
+      count: result.rows.length,
+      data: result.rows,
+    });
+  } catch (error) {
+    console.error("Get All Sponsors Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch speakers",
+      error: error.message,
+    });
+  }
+};
+
+export const getGallery = async(req,res)=>{
+  try{
+    const result = await pool.query(
+      `
+      SELECT 
+        e.id AS event_id,
+        e.title AS event_title,
+        e.slug AS event_slug,
+
+        json_agg(
+          json_build_object(
+            'id', ep.id,
+            'image_url', ep.image_url,
+            'caption', ep.caption,
+            'uploaded_at', ep.uploaded_at
+          )
+          ORDER BY ep.uploaded_at DESC
+        ) AS photos
+
+        FROM events e
+
+        INNER JOIN event_photos ep
+          ON e.id = ep.event_id
+
+        WHERE 
+          e.archived = FALSE
+
+        GROUP BY
+          e.id,
+          e.title,
+          e.slug
+
+        ORDER BY
+         e.event_date DESC;
+      `
+    );
+    res.status(200).json({
+      success: true,
+      count: result.rows.length,
+      data: result.rows
+    });
+  }catch(error){
+    console.error("Get Gallery Error: ", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch gallery",
+      error: error.message
+    });
+  }
+};
+

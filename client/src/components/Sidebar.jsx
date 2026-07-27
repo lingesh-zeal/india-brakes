@@ -1,4 +1,13 @@
-import { FaBars, FaCalendarAlt, FaCamera, FaHandshake, FaHome,FaImages, FaSignOutAlt } from "react-icons/fa";
+import {
+  FaBars,
+  FaCalendarAlt,
+  FaCamera,
+  FaHandshake,
+  FaHome,
+  FaImages,
+  FaSignOutAlt,
+  FaAd,
+} from "react-icons/fa";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
 const Sidebar = ({ collapsed, setCollapsed }) => {
@@ -22,32 +31,39 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
     {
       name: "Events",
       path: "/events",
-      icons: <FaCalendarAlt />
+      icons: <FaCalendarAlt />,
     },
     {
       name: "Sponsors",
       path: "/sponsors",
-      icons: <FaHandshake/>
+      icons: <FaHandshake />,
     },
     {
       name: "Welcome CMS",
       path: "/welcome",
-      icons: <FaImages />
+      icons: <FaImages />,
     },
     {
       name: "Hero Banner",
       path: "/hero-banner",
-      icons: <FaCamera />
-    }
-
+      icons: <FaCamera />,
+    },
+    {
+      name: "Marquee Sponsors",
+      path: "/marquee-sponsors",
+      icons: <FaAd />,
+    },
   ];
 
   return (
-    <div className={`h-screen bg-white shadow-sm p-4 flex flex-col justify-between transition-all duration-300 font-sans ${collapsed ? "w-20" : "w-64"}`}>
-      
+    <div
+      className={`h-screen bg-white shadow-sm p-4 flex flex-col justify-between transition-all duration-300 font-sans ${collapsed ? "w-20" : "w-64"}`}
+    >
       {/* Brand & Toggle Header */}
       <div className="flex flex-col gap-6 shrink-0">
-        <div className={`flex items-center ${collapsed ? "justify-center" : "justify-between"} py-2`}>
+        <div
+          className={`flex items-center ${collapsed ? "justify-center" : "justify-between"} py-2`}
+        >
           {!collapsed && (
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-extrabold text-lg shadow-md shadow-blue-500/20">
@@ -76,21 +92,20 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
                 to={item.path}
                 className={`
                   flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-semibold transition-all duration-150
-                  ${isActive 
-                    ? "bg-blue-50 text-blue-600 border-l-4 border-blue-600 shadow-sm" 
-                    : "text-slate-650 hover:bg-slate-50 hover:text-slate-900 border-l-4 border-transparent"
+                  ${
+                    isActive
+                      ? "bg-blue-50 text-blue-600 border-l-4 border-blue-600 shadow-sm"
+                      : "text-slate-650 hover:bg-slate-50 hover:text-slate-900 border-l-4 border-transparent"
                   }
                   ${collapsed ? "justify-center" : ""}
                 `}
               >
-                <span className={`text-base ${isActive ? "text-blue-600" : "text-slate-400 group-hover:text-slate-600"}`}>
+                <span
+                  className={`text-base ${isActive ? "text-blue-600" : "text-slate-400 group-hover:text-slate-600"}`}
+                >
                   {item.icons}
                 </span>
-                {!collapsed && (
-                  <span>
-                    {item.name}
-                  </span>
-                )}
+                {!collapsed && <span>{item.name}</span>}
               </Link>
             );
           })}

@@ -30,6 +30,7 @@ export default function Events() {
         params: { search },
       });
       setEvents(res.data.data);
+      console.log("EVENTS API CALL:",res.data.data)
     } catch (err) {
       console.error(err);
     }
@@ -179,7 +180,7 @@ export default function Events() {
       </div>
 
       {/* Search Input */}
-      <div className="bg-white px-4 py-3 rounded-xl border border-slate-150 shadow-sm flex items-center gap-3 focus-within:ring-2 focus-within:ring-blue-500/10 focus-within:border-blue-500 transition duration-150">
+      <div className="bg-white px-4 py-3 rounded-2xl border border-slate-100 shadow-sm  flex items-center gap-3 transition duration-150">
         <FaSearch className="text-slate-400 shrink-0" size={14} />
         <input
           type="text"

@@ -12,6 +12,7 @@ import EventRegistrations from "./pages/EventRegistrations";
 import Sponsors from "./pages/Sponsors";
 import WelcomeCMS from "./pages/WelcomeCMS";
 import HeroBanner from "./pages/HeroBanner";
+import MarqueeSponsors from "./pages/MarqueeSponsors";
 
 
 function App() {
@@ -28,10 +29,11 @@ function App() {
               {/* <Route path="/events/create" element={<CreateEvent />} /> */}
               {/* <Route path="/events/edit/:id" element={<EditEvent />} /> */}
               <Route path="/events/:id" element={<EventDetail />} />
-              <Route path="sponsors" element={<Sponsors/>} />
+              <Route path="/sponsors" element={<Sponsors/>} />
               <Route path="/events/:id/registrations" element={<EventRegistrations />} />
               <Route path={"/welcome"} element={<WelcomeCMS/>}/>
-              <Route path={"hero-banner"} element={<HeroBanner/>}/>
+              <Route path={"/hero-banner"} element={<HeroBanner/>}/>
+              <Route path={"/marquee-sponsors"} element={<MarqueeSponsors/>} />
             </Route>
           </Route>
         </Routes>

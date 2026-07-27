@@ -1,9 +1,9 @@
 import express from "express";
 
 import {
-    getEvents, getEventById,getAllSponsors,
+    getEvents, getEventById,getAllSponsors,getAllSpeakers,getGallery,
     createEvent, updateEvent, deleteEvent, 
-    updateEventStatus, archiveEvent, restoreEvent
+    updateEventStatus, archiveEvent, restoreEvent,
 } from "../controllers/event.controller.js";
 
 import { authenticate } from "../middleware/authMiddleware.js";
@@ -19,6 +19,12 @@ router.get("/", getEvents);
 
 //GET All Sponsors 
 router.get("/sponsors", getAllSponsors);
+
+//GET All Speakers
+router.get("/speakers", getAllSpeakers);
+
+//GET Gallery
+router.get("/gallery", getGallery);
 
 // GET event by ID
 router.get("/:id", getEventById);
