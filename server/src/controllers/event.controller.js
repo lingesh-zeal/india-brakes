@@ -3,7 +3,6 @@ import slugify from "slugify";
 import { deleteFile } from "../utils/fileCleanup.js";
 import path from "path";
 import { lifecycleCase } from "../utils/eventLifecycleSql.js";
-import { count } from "console";
 
 /* =========================
    GET EVENTS
@@ -55,48 +54,97 @@ export const getEvents = async (req, res) => {
       index++;
     }
 
-    // MAIN QUERY
+    // =========================
+    // EVENTS QUERY
+    // =========================
 
     const queryValues = [...values, limit, offset];
 
     const dataQuery = `
       SELECT 
-      e.*,
-      s.name AS status,
+        e.*,
+        s.name AS status,
+        (${lifecycleCase}) AS lifecycle,
 
-      (${lifecycleCase}) AS lifecycle,
-
-      COUNT(DISTINCT er.id)::INT AS registration_count,
-      COUNT(DISTINCT sp.id)::INT AS speaker_count,
-      COUNT(DISTINCT spo.id)::INT AS sponsor_count
+        COUNT(DISTINCT er.id)::INT AS registration_count,
+        COUNT(DISTINCT sp.id)::INT AS speaker_count,
+        COUNT(DISTINCT spo.id)::INT AS sponsor_count
 
       FROM events e
 
-      LEFT JOIN event_status s ON e.status_id = s.id
-      LEFT JOIN event_registrations er ON er.event_id = e.id
-      LEFT JOIN event_speakers sp ON sp.event_id = e.id
-      LEFT JOIN event_sponsors spo ON spo.event_id = e.id
-      
+      LEFT JOIN event_status s 
+        ON e.status_id = s.id
+
+      LEFT JOIN event_registrations er 
+        ON er.event_id = e.id
+
+      LEFT JOIN event_speakers sp 
+        ON sp.event_id = e.id
+
+      LEFT JOIN event_sponsors spo 
+        ON spo.event_id = e.id
+
       ${where}
 
-      GROUP BY e.id, s.name
+      GROUP BY 
+        e.id,
+        s.name
 
-      ORDER BY e.event_date DESC
+      ORDER BY 
+        e.event_date DESC
+
       LIMIT $${index}
       OFFSET $${index + 1}
     `;
 
+    // =========================
+    // COUNT QUERY
+    // =========================
+
     const countQuery = `
-    SELECT COUNT(DISTINCT e.id)::INT AS total
-    FROM events e
-    LEFT JOIN event_status s ON e.status_id = s.id
-    ${where}
+      SELECT 
+        COUNT(DISTINCT e.id)::INT AS total
+      FROM events e
+      LEFT JOIN event_status s 
+        ON e.status_id = s.id
+
+      ${where}
     `;
 
     const [eventResult, countResult] = await Promise.all([
       pool.query(dataQuery, queryValues),
       pool.query(countQuery, values),
     ]);
+
+    const events = eventResult.rows;
+
+    // =========================
+    // ATTACH FEE CATEGORIES
+    // =========================
+
+    if (events.length > 0) {
+      const eventIds = events.map((event) => event.id);
+
+      const feesResult = await pool.query(
+        `
+        SELECT *
+        FROM event_fee_categories
+        WHERE event_id = ANY($1)
+        ORDER BY display_order
+        `,
+        [eventIds],
+      );
+
+      events.forEach((event) => {
+        event.fee_categories = feesResult.rows.filter(
+          (fee) => fee.event_id === event.id,
+        );
+      });
+    }
+
+    // =========================
+    // RESPONSE
+    // =========================
 
     const total = countResult.rows[0].total;
 
@@ -106,8 +154,8 @@ export const getEvents = async (req, res) => {
       limit,
       total,
       totalPages: Math.ceil(total / limit),
-      count: eventResult.rows.length,
-      data: eventResult.rows,
+      count: events.length,
+      data: events,
     });
   } catch (error) {
     console.error("Get Events Error:", error);
@@ -118,6 +166,7 @@ export const getEvents = async (req, res) => {
     });
   }
 };
+
 /* =========================
    GET EVENT BY ID
 ========================= */
@@ -1039,8 +1088,8 @@ ORDER BY
   }
 };
 
-export const getGallery = async(req,res)=>{
-  try{
+export const getGallery = async (req, res) => {
+  try {
     const result = await pool.query(
       `
       SELECT 
@@ -1073,21 +1122,20 @@ export const getGallery = async(req,res)=>{
 
         ORDER BY
          e.event_date DESC;
-      `
+      `,
     );
     res.status(200).json({
       success: true,
       count: result.rows.length,
-      data: result.rows
+      data: result.rows,
     });
-  }catch(error){
+  } catch (error) {
     console.error("Get Gallery Error: ", error);
 
     res.status(500).json({
       success: false,
       message: "Failed to fetch gallery",
-      error: error.message
+      error: error.message,
     });
   }
 };
-

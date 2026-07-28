@@ -40,7 +40,7 @@ export default function CreateEventModal({ open, onClose, onSuccess }) {
   const [form, setForm] = useState({
     title: "",
     description: "",
-    status_id: "2",
+    status_id: "",
     venue: "",
     organized_by: "",
 
@@ -72,8 +72,81 @@ export default function CreateEventModal({ open, onClose, onSuccess }) {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   try {
+  //     setLoading(true);
+
+  //     const data = new FormData();
+
+  //     data.append("title", form.title);
+  //     data.append("description", form.description);
+  //     data.append("status_id", form.status_id);
+  //     data.append("venue", form.venue);
+  //     data.append("organized_by", form.organized_by);
+
+  //     data.append("event_date", form.event_date);
+  //     data.append("event_end_date", form.event_end_date);
+  //     data.append("registration_deadline", form.registration_deadline);
+  //     data.append("registration_url", form.registration_url);
+
+  //     data.append("is_homepage", form.is_homepage);
+
+  //     data.append(
+  //       "workshop_themes",
+  //       JSON.stringify(form.workshop_themes.filter(Boolean)),
+  //     );
+
+  //     data.append(
+  //       "target_audience",
+  //       JSON.stringify(form.target_audience.filter(Boolean)),
+  //     );
+
+  //     data.append(
+  //       "speakers",
+  //       JSON.stringify(form.speakers.map(({ image, ...rest }) => rest)),
+  //     );
+
+  //     data.append("fee_categories", JSON.stringify(form.fee_categories));
+
+  //     data.append(
+  //       "sponsors",
+  //       JSON.stringify(form.sponsors.map(({ logo, ...rest }) => rest)),
+  //     );
+
+  //     if (form.banner) data.append("banner", form.banner);
+
+  //     if (form.brochure) data.append("brochure", form.brochure);
+
+  //     form.photos.forEach((file) => {
+  //       data.append("photos", file);
+  //     });
+
+  //     form.speakers.forEach((speaker) => {
+  //       if (speaker.image) data.append("speaker_images", speaker.image);
+  //     });
+
+  //     form.sponsors.forEach((sponsor) => {
+  //       if (sponsor.logo) data.append("sponsor_logos", sponsor.logo);
+  //     });
+
+  //     await api.post("/events", data);
+
+  //     onSuccess?.();
+  //     onClose();
+  //   } catch (err) {
+  //     console.error(err);
+  //     alert(err.response?.data?.message || "Failed");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  const handleSubmit = async (e, status) => {
     e.preventDefault();
+
+    const finalStatus = status ?? 2;
 
     try {
       setLoading(true);
@@ -82,7 +155,7 @@ export default function CreateEventModal({ open, onClose, onSuccess }) {
 
       data.append("title", form.title);
       data.append("description", form.description);
-      data.append("status_id", form.status_id);
+      data.append("status_id", finalStatus);
       data.append("venue", form.venue);
       data.append("organized_by", form.organized_by);
 
@@ -142,16 +215,16 @@ export default function CreateEventModal({ open, onClose, onSuccess }) {
       setLoading(false);
     }
   };
-
   return (
     <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 font-sans">
       <div className="w-full max-w-5xl h-[92vh] bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-slate-100">
-        
         {/* Modal Header */}
         <div className="sticky top-0 z-20 bg-white border-b border-slate-100 px-8 py-5 flex items-center justify-between shrink-0">
           <div>
             <h2 className="text-2xl font-bold text-slate-800">Create Event</h2>
-            <p className="text-slate-400 text-xs mt-0.5">Fill in details step by step to launch a new event</p>
+            <p className="text-slate-400 text-xs mt-0.5">
+              Fill in details step by step to launch a new event
+            </p>
           </div>
           <button
             type="button"
@@ -166,42 +239,53 @@ export default function CreateEventModal({ open, onClose, onSuccess }) {
         <div className="bg-slate-50/50 border-b border-slate-100 px-6 py-4 shrink-0 overflow-x-auto scrollbar-none">
           <div className="flex items-center justify-center max-w-4xl mx-auto w-full">
             {STEPS.map((step, idx) => (
-              <div key={idx} className="flex items-center flex-1 last:flex-none">
+              <div
+                key={idx}
+                className="flex items-center flex-1 last:flex-none"
+              >
                 <button
                   type="button"
                   onClick={() => setActiveStep(idx)}
                   className="flex items-center gap-3 group focus:outline-none cursor-pointer shrink-0"
                 >
-                  <div className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 shadow-sm border ${
-                    activeStep === idx 
-                      ? "bg-gradient-to-tr from-blue-600 to-indigo-600 text-white border-blue-600 ring-4 ring-blue-100" 
-                      : activeStep > idx 
-                        ? "bg-emerald-500 text-white border-emerald-500" 
-                        : "bg-white text-slate-500 border-slate-200 group-hover:bg-slate-100"
-                  }`}>
+                  <div
+                    className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 shadow-sm border ${
+                      activeStep === idx
+                        ? "bg-gradient-to-tr from-blue-600 to-indigo-600 text-white border-blue-600 ring-4 ring-blue-100"
+                        : activeStep > idx
+                          ? "bg-emerald-500 text-white border-emerald-500"
+                          : "bg-white text-slate-500 border-slate-200 group-hover:bg-slate-100"
+                    }`}
+                  >
                     {activeStep > idx ? "✓" : idx + 1}
                   </div>
                   <div className="flex flex-col text-left shrink-0">
-                    <span className={`text-[10px] uppercase tracking-wider font-bold ${
-                      activeStep === idx ? "text-blue-600" : "text-slate-400"
-                    }`}>
+                    <span
+                      className={`text-[10px] uppercase tracking-wider font-bold ${
+                        activeStep === idx ? "text-blue-600" : "text-slate-400"
+                      }`}
+                    >
                       Step {idx + 1}
                     </span>
-                    <span className={`text-xs font-semibold transition-colors ${
-                      activeStep === idx 
-                        ? "text-slate-800" 
-                        : activeStep > idx 
-                          ? "text-slate-600" 
-                          : "text-slate-500 group-hover:text-slate-700"
-                    }`}>
+                    <span
+                      className={`text-xs font-semibold transition-colors ${
+                        activeStep === idx
+                          ? "text-slate-800"
+                          : activeStep > idx
+                            ? "text-slate-600"
+                            : "text-slate-500 group-hover:text-slate-700"
+                      }`}
+                    >
                       {step.label}
                     </span>
                   </div>
                 </button>
                 {idx < STEPS.length - 1 && (
-                  <div className={`h-[2px] flex-1 mx-4 min-w-[20px] transition-colors duration-300 ${
-                    activeStep > idx ? "bg-emerald-400" : "bg-slate-200"
-                  }`} />
+                  <div
+                    className={`h-[2px] flex-1 mx-4 min-w-[20px] transition-colors duration-300 ${
+                      activeStep > idx ? "bg-emerald-400" : "bg-slate-200"
+                    }`}
+                  />
                 )}
               </div>
             ))}
@@ -210,10 +294,10 @@ export default function CreateEventModal({ open, onClose, onSuccess }) {
 
         <form
           id="create-event-form"
-          onSubmit={handleSubmit}
+          // onSubmit={handleSubmit}
+          onSubmit={(e) => e.preventDefault()}
           className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6 bg-slate-50/20"
         >
-          
           {/* STEP 0: GENERAL INFO */}
           <div className={activeStep === 0 ? "space-y-6" : "hidden"}>
             {/* BASIC */}
@@ -272,7 +356,9 @@ export default function CreateEventModal({ open, onClose, onSuccess }) {
                     className="w-full rounded-xl border border-slate-200 bg-slate-50/30 px-4 py-3 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition duration-150 text-slate-800 placeholder-slate-400"
                     placeholder="Organized By"
                     value={form.organized_by}
-                    onChange={(e) => updateField("organized_by", e.target.value)}
+                    onChange={(e) =>
+                      updateField("organized_by", e.target.value)
+                    }
                   />
                 </div>
 
@@ -318,7 +404,9 @@ export default function CreateEventModal({ open, onClose, onSuccess }) {
                     type="date"
                     className="w-full border border-slate-200 bg-slate-50/30 rounded-xl px-4 py-3 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition duration-150 text-slate-800"
                     value={form.event_end_date}
-                    onChange={(e) => updateField("event_end_date", e.target.value)}
+                    onChange={(e) =>
+                      updateField("event_end_date", e.target.value)
+                    }
                   />
                 </div>
 
@@ -330,7 +418,9 @@ export default function CreateEventModal({ open, onClose, onSuccess }) {
                     type="date"
                     className="w-full border border-slate-200 bg-slate-50/30 rounded-xl px-4 py-3 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition duration-150 text-slate-800"
                     value={form.registration_deadline}
-                    onChange={(e) => updateField("registration_deadline", e.target.value)}
+                    onChange={(e) =>
+                      updateField("registration_deadline", e.target.value)
+                    }
                   />
                 </div>
 
@@ -343,7 +433,9 @@ export default function CreateEventModal({ open, onClose, onSuccess }) {
                     placeholder="https://example.com/register"
                     className="w-full border border-slate-200 bg-slate-50/30 rounded-xl px-4 py-3 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition duration-150 text-slate-800 placeholder-slate-400"
                     value={form.registration_url}
-                    onChange={(e) => updateField("registration_url", e.target.value)}
+                    onChange={(e) =>
+                      updateField("registration_url", e.target.value)
+                    }
                   />
                 </div>
               </div>
@@ -356,14 +448,20 @@ export default function CreateEventModal({ open, onClose, onSuccess }) {
               </h3>
               <div className="flex items-center justify-between bg-slate-50 border border-slate-100 rounded-xl p-5">
                 <div>
-                  <p className="font-semibold text-slate-700 text-sm">Show on Homepage</p>
-                  <p className="text-xs text-slate-400 mt-0.5">Feature this event on the user-facing homepage listing.</p>
+                  <p className="font-semibold text-slate-700 text-sm">
+                    Show on Homepage
+                  </p>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    Feature this event on the user-facing homepage listing.
+                  </p>
                 </div>
                 <button
                   type="button"
                   onClick={() => updateField("is_homepage", !form.is_homepage)}
                   className={`relative inline-flex h-7 w-13 items-center rounded-full transition duration-300 cursor-pointer ${
-                    form.is_homepage ? "bg-gradient-to-r from-blue-600 to-indigo-600" : "bg-slate-300"
+                    form.is_homepage
+                      ? "bg-gradient-to-r from-blue-600 to-indigo-600"
+                      : "bg-slate-300"
                   }`}
                 >
                   <span
@@ -386,10 +484,16 @@ export default function CreateEventModal({ open, onClose, onSuccess }) {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Banner - Clickable Card */}
                 <label className="group block border-2 border-dashed border-slate-200 hover:border-blue-500 bg-slate-50/30 hover:bg-blue-50/20 rounded-2xl p-6 text-center cursor-pointer transition duration-200">
-                  <div className="text-4xl mb-3 group-hover:scale-110 transition duration-200">🖼️</div>
-                  <h4 className="font-bold text-slate-700 text-sm">Event Banner</h4>
-                  <p className="text-slate-400 text-xs mt-1">Recommended JPG, PNG</p>
-                  
+                  <div className="text-4xl mb-3 group-hover:scale-110 transition duration-200">
+                    🖼️
+                  </div>
+                  <h4 className="font-bold text-slate-700 text-sm">
+                    Event Banner
+                  </h4>
+                  <p className="text-slate-400 text-xs mt-1">
+                    Recommended JPG, PNG
+                  </p>
+
                   {form.banner ? (
                     <span className="inline-block mt-3 bg-emerald-50 text-emerald-700 border border-emerald-100 text-xs font-semibold px-3 py-1.5 rounded-lg max-w-full truncate">
                       ✓ {form.banner.name}
@@ -410,10 +514,14 @@ export default function CreateEventModal({ open, onClose, onSuccess }) {
 
                 {/* Brochure - Clickable Card */}
                 <label className="group block border-2 border-dashed border-slate-200 hover:border-blue-500 bg-slate-50/30 hover:bg-blue-50/20 rounded-2xl p-6 text-center cursor-pointer transition duration-200">
-                  <div className="text-4xl mb-3 group-hover:scale-110 transition duration-200">📄</div>
-                  <h4 className="font-bold text-slate-700 text-sm">Event Brochure</h4>
+                  <div className="text-4xl mb-3 group-hover:scale-110 transition duration-200">
+                    📄
+                  </div>
+                  <h4 className="font-bold text-slate-700 text-sm">
+                    Event Brochure
+                  </h4>
                   <p className="text-slate-400 text-xs mt-1">Recommended PDF</p>
-                  
+
                   {form.brochure ? (
                     <span className="inline-block mt-3 bg-emerald-50 text-emerald-700 border border-emerald-100 text-xs font-semibold px-3 py-1.5 rounded-lg max-w-full truncate">
                       ✓ {form.brochure.name}
@@ -434,10 +542,16 @@ export default function CreateEventModal({ open, onClose, onSuccess }) {
 
                 {/* Gallery - Clickable Card */}
                 <label className="group block border-2 border-dashed border-slate-200 hover:border-blue-500 bg-slate-50/30 hover:bg-blue-50/20 rounded-2xl p-6 text-center cursor-pointer transition duration-200">
-                  <div className="text-4xl mb-3 group-hover:scale-110 transition duration-200">📷</div>
-                  <h4 className="font-bold text-slate-700 text-sm">Event Gallery</h4>
-                  <p className="text-slate-400 text-xs mt-1">Multiple JPG, PNG images</p>
-                  
+                  <div className="text-4xl mb-3 group-hover:scale-110 transition duration-200">
+                    📷
+                  </div>
+                  <h4 className="font-bold text-slate-700 text-sm">
+                    Event Gallery
+                  </h4>
+                  <p className="text-slate-400 text-xs mt-1">
+                    Multiple JPG, PNG images
+                  </p>
+
                   {form.photos.length > 0 ? (
                     <span className="inline-block mt-3 bg-emerald-50 text-emerald-700 border border-emerald-100 text-xs font-semibold px-3 py-1.5 rounded-lg">
                       ✓ {form.photos.length} files selected
@@ -468,22 +582,34 @@ export default function CreateEventModal({ open, onClose, onSuccess }) {
                   <div className="grid gap-3">
                     {form.banner && (
                       <div className="flex justify-between items-center bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-sm">
-                        <span className="font-medium text-slate-500">Banner</span>
-                        <span className="font-semibold text-blue-600 truncate max-w-xs">{form.banner.name}</span>
+                        <span className="font-medium text-slate-500">
+                          Banner
+                        </span>
+                        <span className="font-semibold text-blue-600 truncate max-w-xs">
+                          {form.banner.name}
+                        </span>
                       </div>
                     )}
 
                     {form.brochure && (
                       <div className="flex justify-between items-center bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-sm">
-                        <span className="font-medium text-slate-500">Brochure</span>
-                        <span className="font-semibold text-blue-600 truncate max-w-xs">{form.brochure.name}</span>
+                        <span className="font-medium text-slate-500">
+                          Brochure
+                        </span>
+                        <span className="font-semibold text-blue-600 truncate max-w-xs">
+                          {form.brochure.name}
+                        </span>
                       </div>
                     )}
 
                     {form.photos.length > 0 && (
                       <div className="flex justify-between items-center bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-sm">
-                        <span className="font-medium text-slate-500">Gallery Photos</span>
-                        <span className="font-semibold text-blue-600">{form.photos.length} images selected</span>
+                        <span className="font-medium text-slate-500">
+                          Gallery Photos
+                        </span>
+                        <span className="font-semibold text-blue-600">
+                          {form.photos.length} images selected
+                        </span>
                       </div>
                     )}
                   </div>
@@ -501,7 +627,11 @@ export default function CreateEventModal({ open, onClose, onSuccess }) {
                   Workshop Themes
                 </h3>
                 <p className="text-xs text-slate-400 mt-1">
-                  Type a theme and press <kbd className="bg-slate-100 px-1 py-0.5 rounded text-[10px] font-bold text-slate-500 border border-slate-200">Enter</kbd> to add.
+                  Type a theme and press{" "}
+                  <kbd className="bg-slate-100 px-1 py-0.5 rounded text-[10px] font-bold text-slate-500 border border-slate-200">
+                    Enter
+                  </kbd>{" "}
+                  to add.
                 </p>
               </div>
 
@@ -555,7 +685,11 @@ export default function CreateEventModal({ open, onClose, onSuccess }) {
                   Target Audience
                 </h3>
                 <p className="text-xs text-slate-400 mt-1">
-                  Type an audience group and press <kbd className="bg-slate-100 px-1 py-0.5 rounded text-[10px] font-bold text-slate-500 border border-slate-200">Enter</kbd> to add.
+                  Type an audience group and press{" "}
+                  <kbd className="bg-slate-100 px-1 py-0.5 rounded text-[10px] font-bold text-slate-500 border border-slate-200">
+                    Enter
+                  </kbd>{" "}
+                  to add.
                 </p>
               </div>
 
@@ -696,15 +830,21 @@ export default function CreateEventModal({ open, onClose, onSuccess }) {
                       </label>
 
                       <label className="group/upload flex flex-col items-center justify-center border-2 border-dashed border-slate-200 hover:border-blue-500 bg-white hover:bg-blue-50/20 rounded-xl p-5 cursor-pointer transition text-slate-500 text-center">
-                        <div className="text-3xl mb-2 group-hover/upload:scale-110 transition duration-150">📷</div>
-                        <p className="text-xs font-bold text-slate-600">Click to upload photo</p>
-                        
+                        <div className="text-3xl mb-2 group-hover/upload:scale-110 transition duration-150">
+                          📷
+                        </div>
+                        <p className="text-xs font-bold text-slate-600">
+                          Click to upload photo
+                        </p>
+
                         {speaker.image ? (
                           <p className="mt-2 text-emerald-600 text-xs font-bold bg-emerald-50 border border-emerald-100 px-2 py-1 rounded-lg">
                             ✓ {speaker.image.name}
                           </p>
                         ) : (
-                          <p className="text-[10px] text-slate-400 mt-0.5">JPG, PNG up to 2MB</p>
+                          <p className="text-[10px] text-slate-400 mt-0.5">
+                            JPG, PNG up to 2MB
+                          </p>
                         )}
 
                         <input
@@ -819,15 +959,21 @@ export default function CreateEventModal({ open, onClose, onSuccess }) {
                       </label>
 
                       <label className="group/upload flex flex-col items-center justify-center border-2 border-dashed border-slate-200 hover:border-blue-500 bg-white hover:bg-blue-50/20 rounded-xl p-5 cursor-pointer transition text-slate-500 text-center">
-                        <div className="text-3xl mb-2 group-hover/upload:scale-110 transition duration-150">🏢</div>
-                        <p className="text-xs font-bold text-slate-600">Click to upload logo</p>
-                        
+                        <div className="text-3xl mb-2 group-hover/upload:scale-110 transition duration-150">
+                          🏢
+                        </div>
+                        <p className="text-xs font-bold text-slate-600">
+                          Click to upload logo
+                        </p>
+
                         {sponsor.logo ? (
                           <p className="mt-2 text-emerald-600 text-xs font-bold bg-emerald-50 border border-emerald-100 px-2 py-1 rounded-lg">
                             ✓ {sponsor.logo.name}
                           </p>
                         ) : (
-                          <p className="text-[10px] text-slate-400 mt-0.5">PNG Logo</p>
+                          <p className="text-[10px] text-slate-400 mt-0.5">
+                            PNG Logo
+                          </p>
                         )}
 
                         <input
@@ -990,18 +1136,36 @@ export default function CreateEventModal({ open, onClose, onSuccess }) {
                 Next Step
               </button>
             ) : (
-              <button
-                type="submit"
-                form="create-event-form"
-                disabled={loading}
-                className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold text-sm disabled:opacity-60 disabled:cursor-not-allowed transition duration-150 cursor-pointer shadow-md shadow-blue-500/10"
-              >
-                {loading ? "Creating..." : "Create Event"}
-              </button>
+              // <button
+              //   type="submit"
+              //   form="create-event-form"
+              //   disabled={loading}
+              //   className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold text-sm disabled:opacity-60 disabled:cursor-not-allowed transition duration-150 cursor-pointer shadow-md shadow-blue-500/10"
+              // >
+              //   {loading ? "Creating..." : "Create Event"}
+              // </button>
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  disabled={loading}
+                  onClick={(e) => handleSubmit(e, 1)}
+                  className="px-6 py-3 rounded-xl border border-slate-300 bg-white text-slate-700 hover:bg-slate-100 font-semibold text-sm disabled:opacity-60"
+                >
+                  {loading ? "Saving..." : "Save Draft"}
+                </button>
+
+                <button
+                  type="button"
+                  disabled={loading}
+                  onClick={(e) => handleSubmit(e, 2)}
+                  className="px-6 py-3 rounded-xl bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold text-sm disabled:opacity-60"
+                >
+                  {loading ? "Creating..." : "Create Event"}
+                </button>
+              </div>
             )}
           </div>
         </div>
-
       </div>
     </div>
   );
