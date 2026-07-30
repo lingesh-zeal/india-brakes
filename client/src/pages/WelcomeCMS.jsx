@@ -7,6 +7,7 @@ import {
   getWelcome,
   updateImage,
   updateWelcome,
+  createWelcome
 } from "../api/welcomeApi";
 
 export default function WelcomeCMS() {
@@ -24,6 +25,7 @@ export default function WelcomeCMS() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingImage, setEditingImage] = useState(null);
   const [deletingImage, setDeletingImage] = useState(null);
+  const [sectionExists, setSectionExists] = useState(false);
 
   // ----------------------------
   // Load Data
@@ -37,13 +39,26 @@ export default function WelcomeCMS() {
 
       const welcomeData = res.data.data;
 
-      setSection({
-        heading: welcomeData.section?.heading || "",
-        sub_heading: welcomeData.section?.sub_heading || "",
-        content: welcomeData.section?.content || "",
-      });
+if (welcomeData.section) {
+  setSectionExists(true);
 
-      setCarousel(welcomeData.carousel || []);
+  setSection({
+    heading: welcomeData.section.heading || "",
+    sub_heading: welcomeData.section.sub_heading || "",
+    content: welcomeData.section.content || "",
+  });
+} else {
+  setSectionExists(false);
+
+  setSection({
+    heading: "",
+    sub_heading: "",
+    content: "",
+  });
+}
+
+setCarousel(welcomeData.carousel || []);
+
     } catch (err) {
       console.error(err);
       alert("Unable to load Welcome CMS.");
@@ -59,21 +74,59 @@ export default function WelcomeCMS() {
   // ----------------------------
   // Save Welcome Section
   // ----------------------------
+const saveWelcome = async () => {
+  try {
+    setSaving(true);
 
-  const saveWelcome = async () => {
-    try {
-      setSaving(true);
+    if (
+      !section.heading.trim() ||
+      !section.content.trim()
+    ) {
+      alert("Heading and content are required.");
+      return;
+    }
 
+
+    if (sectionExists) {
       await updateWelcome(section);
 
       alert("Welcome section updated.");
-    } catch (err) {
-      console.error(err);
-      alert("Failed to update.");
-    } finally {
-      setSaving(false);
+    } 
+    else {
+      await createWelcome(section);
+
+      setSectionExists(true);
+
+      alert("Welcome section created.");
     }
-  };
+
+  } catch (err) {
+    console.error(err);
+
+    alert(
+      err.response?.data?.message ||
+      "Failed to save welcome section."
+    );
+
+  } finally {
+    setSaving(false);
+  }
+};
+
+  // const saveWelcome = async () => {
+  //   try {
+  //     setSaving(true);
+
+  //     await updateWelcome(section);
+
+  //     alert("Welcome section updated.");
+  //   } catch (err) {
+  //     console.error(err);
+  //     alert("Failed to update.");
+  //   } finally {
+  //     setSaving(false);
+  //   }
+  // };
 
   // ----------------------------
   // Delete Image
@@ -147,7 +200,13 @@ export default function WelcomeCMS() {
           >
             <FaSave />
 
-            {saving ? "Saving..." : "Save Changes"}
+            {saving 
+                ? "Saving..." 
+                : sectionExists 
+                ? "Save Changes" 
+                : "Create Section"
+            }
+
           </button>
         </div>
 
@@ -159,22 +218,10 @@ export default function WelcomeCMS() {
           {/* FORM CARD */}
 
           <div
-            className="
-            bg-white
-            rounded-3xl
-            border
-            border-slate-200
-            shadow-xl
-            overflow-hidden
-          "
+            className="bg-white rounded-3xl border border-slate-200 shadow-xl overflow-hidden"
           >
             <div
-              className="
-              px-8
-              py-6
-              bg-slate-50
-              border-b
-            "
+              className="px-8 py-6 bg-slate-50 border-b border-gray-100 shadow-sm"
             >
               <h2 className="text-xl font-bold text-slate-900">
                 Welcome Content
@@ -306,7 +353,7 @@ export default function WelcomeCMS() {
             font-semibold
             "
             >
-              Live Preview
+ {sectionExists ? "Live Preview" : "Create Preview"}
             </p>
 
             <h2

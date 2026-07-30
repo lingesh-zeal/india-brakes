@@ -2,6 +2,9 @@ import api from "./api";
 
 export const getWelcome = () => api.get("/welcome-cms");
 
+export const createWelcome = (data) =>
+  api.post("/welcome-cms/admin", data);
+
 export const updateWelcome = (data) => api.put("/welcome-cms/admin", data);
 
 export const addImage = (formData) =>

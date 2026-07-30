@@ -1,13 +1,19 @@
 import express from "express";
 import { authenticate } from "../middleware/authMiddleware.js";
 import upload from "../middleware/welcomeUpload.js";
-import { addCarouselImage, deleteCarouselImage, getWelcome, updateCarouselImage, updateWelcome } from "../controllers/welcome.controller.js";
+import { addCarouselImage, deleteCarouselImage, getWelcome,
+     updateCarouselImage, updateWelcome, createWelcome } from "../controllers/welcome.controller.js";
 
 const router = express.Router();
 
 router.get("/", getWelcome);
 
 //ADMIN
+router.post(
+    "/admin",
+    authenticate,
+    createWelcome
+);
 
 router.put(
     "/admin", authenticate, updateWelcome

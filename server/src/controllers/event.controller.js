@@ -19,10 +19,21 @@ export const getEvents = async (req, res) => {
     const homepage = req.query.homepage;
     const lifecycle = req.query.lifecycle;
 
+    // true only for /api/events/admin
+    const isAdmin = req.isAdmin === true;
+
     let where = `WHERE 1=1`;
 
     const values = [];
     let index = 1;
+
+    // Public API -> only Published & Not Archived
+    if (!isAdmin) {
+      where += `
+        AND e.archived = false
+        AND s.name = 'Published'
+      `;
+    }
 
     if (search) {
       where += `
@@ -54,14 +65,10 @@ export const getEvents = async (req, res) => {
       index++;
     }
 
-    // =========================
-    // EVENTS QUERY
-    // =========================
-
     const queryValues = [...values, limit, offset];
 
     const dataQuery = `
-      SELECT 
+      SELECT
         e.*,
         s.name AS status,
         (${lifecycleCase}) AS lifecycle,
@@ -72,40 +79,37 @@ export const getEvents = async (req, res) => {
 
       FROM events e
 
-      LEFT JOIN event_status s 
+      LEFT JOIN event_status s
         ON e.status_id = s.id
 
-      LEFT JOIN event_registrations er 
+      LEFT JOIN event_registrations er
         ON er.event_id = e.id
 
-      LEFT JOIN event_speakers sp 
+      LEFT JOIN event_speakers sp
         ON sp.event_id = e.id
 
-      LEFT JOIN event_sponsors spo 
+      LEFT JOIN event_sponsors spo
         ON spo.event_id = e.id
 
       ${where}
 
-      GROUP BY 
+      GROUP BY
         e.id,
         s.name
 
-      ORDER BY 
+      ORDER BY
         e.event_date DESC
 
       LIMIT $${index}
       OFFSET $${index + 1}
     `;
 
-    // =========================
-    // COUNT QUERY
-    // =========================
-
     const countQuery = `
-      SELECT 
+      SELECT
         COUNT(DISTINCT e.id)::INT AS total
       FROM events e
-      LEFT JOIN event_status s 
+
+      LEFT JOIN event_status s
         ON e.status_id = s.id
 
       ${where}
@@ -117,10 +121,6 @@ export const getEvents = async (req, res) => {
     ]);
 
     const events = eventResult.rows;
-
-    // =========================
-    // ATTACH FEE CATEGORIES
-    // =========================
 
     if (events.length > 0) {
       const eventIds = events.map((event) => event.id);
@@ -141,10 +141,6 @@ export const getEvents = async (req, res) => {
         );
       });
     }
-
-    // =========================
-    // RESPONSE
-    // =========================
 
     const total = countResult.rows[0].total;
 

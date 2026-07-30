@@ -1,5 +1,31 @@
 import { pool } from "../config/db.js";
 
+export const createSection = async (data) => {
+  const { heading, sub_heading, content } = data;
+
+  const existing = await pool.query(`SELECT id FROM welcome_sections LIMIT 1`);
+
+  if (existing.rows.length > 0) {
+    throw new Error("Welcome section already exists");
+  }
+
+  const result = await pool.query(
+    `
+    INSERT INTO welcome_sections
+    (
+      heading,
+      sub_heading,
+      content
+    )
+    VALUES($1,$2,$3)
+    RETURNING *
+    `,
+    [heading, sub_heading, content],
+  );
+
+  return result.rows[0];
+};
+
 export const getWelcome = async () => {
   const section = await pool.query(`SELECT * FROM welcome_sections LIMIT 1`);
 
@@ -61,12 +87,16 @@ export const addImage = async (data) => {
         VALUES($1,$2,$3)
         RETURNING *
         `,
-    [`carousel/${data.image}`, data.alt_tag, displayOrder],
+    [
+      `carousel/${data.image}`, 
+      data.alt_tag, 
+      displayOrder
+    ],
   );
   return {
     ...result.rows[0],
-    image: `uploads/${result.rows[0].image}`
-    };
+    image: `uploads/${result.rows[0].image}`,
+  };
 };
 
 export const getImage = async (id) => {
@@ -92,8 +122,8 @@ export const updateImage = async (id, data) => {
 
   return {
     ...result.rows[0],
-     image: `uploads/${result.rows[0].image}`
-  }
+    image: `uploads/${result.rows[0].image}`,
+  };
 };
 
 export const deleteImage = async (id) => {

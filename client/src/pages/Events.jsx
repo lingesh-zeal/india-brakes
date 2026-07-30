@@ -26,7 +26,7 @@ export default function Events() {
 
   const fetchEvents = async () => {
     try {
-      const res = await API.get("/events", {
+      const res = await API.get("/events/admin", {
         params: { search },
       });
       setEvents(res.data.data);

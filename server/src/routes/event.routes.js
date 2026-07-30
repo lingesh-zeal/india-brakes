@@ -14,8 +14,19 @@ const router = express.Router();
 
 // EVENT ROUTES
 
-// GET all events
+// Public website (Published + Not Archived)
 router.get("/", getEvents);
+
+// Admin panel (All events)
+router.get(
+  "/admin",
+  authenticate,
+  (req, res, next) => {
+    req.isAdmin = true;
+    next();
+  },
+  getEvents
+);
 
 //GET All Sponsors 
 router.get("/sponsors", getAllSponsors);

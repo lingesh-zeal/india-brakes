@@ -741,42 +741,20 @@ export default function CreateEventModal({ open, onClose, onSuccess }) {
           <div className={activeStep === 3 ? "space-y-6" : "hidden"}>
             {/* SPEAKERS */}
             <section className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 md:p-8">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h3 className="text-lg font-bold text-slate-800 border-l-4 border-blue-600 pl-3">
-                    Speakers
-                  </h3>
-                  <p className="text-xs text-slate-400 mt-1">
-                    Add event speakers with profiles and photos.
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() =>
-                    updateField("speakers", [
-                      ...form.speakers,
-                      {
-                        name: "",
-                        role: "",
-                        designation: "",
-                        department: "",
-                        organization: "",
-                        display_order: 1,
-                        image: null,
-                      },
-                    ])
-                  }
-                  className="inline-flex items-center gap-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-100 px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer"
-                >
-                  + Add Speaker
-                </button>
+              <div className="mb-6">
+                <h3 className="text-lg font-bold text-slate-800 border-l-4 border-blue-600 pl-3">
+                  Speakers
+                </h3>
+                <p className="text-xs text-slate-400 mt-1">
+                  Add event speakers with profiles and photos.
+                </p>
               </div>
 
               <div className="space-y-6">
                 {form.speakers.map((speaker, index) => (
                   <div
                     key={index}
-                    className="bg-slate-50/50 border border-slate-150 rounded-2xl p-5 md:p-6 grid grid-cols-1 md:grid-cols-2 gap-5 relative group/card hover:shadow-md transition duration-200"
+                    className="bg-slate-50/50 rounded-2xl p-5 md:p-6 grid grid-cols-1 md:grid-cols-2 gap-5 relative group/card hover:shadow-md transition duration-200"
                   >
                     {/* Header badge */}
                     <div className="md:col-span-2 flex justify-between items-center">
@@ -862,43 +840,46 @@ export default function CreateEventModal({ open, onClose, onSuccess }) {
                   </div>
                 ))}
               </div>
+              <div className="flex justify-center pt-4">
+                <button
+                  type="button"
+                  onClick={() =>
+                    updateField("speakers", [
+                      ...form.speakers,
+                      {
+                        name: "",
+                        role: "",
+                        designation: "",
+                        department: "",
+                        organization: "",
+                        display_order: form.speakers.length + 1,
+                        image: null,
+                      },
+                    ])
+                  }
+                  className="w-full cursor-pointer inline-flex items-center justify-center gap-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-100 px-6 py-3 text-sm font-semibold transition"
+                >
+                  + Add Another Speaker
+                </button>
+              </div>
             </section>
 
             {/* SPONSORS */}
             <section className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 md:p-8">
-              <div className="flex items-center justify-between mb-6">
-                <div>
+              <div className="mb-6">
                   <h3 className="text-lg font-bold text-slate-800 border-l-4 border-blue-600 pl-3">
                     Sponsors
                   </h3>
                   <p className="text-xs text-slate-400 mt-1">
                     Add supporting organizations and logos.
                   </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() =>
-                    updateField("sponsors", [
-                      ...form.sponsors,
-                      {
-                        sponsor_name: "",
-                        website_url: "",
-                        display_order: 1,
-                        logo: null,
-                      },
-                    ])
-                  }
-                  className="inline-flex items-center gap-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-100 px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer"
-                >
-                  + Add Sponsor
-                </button>
               </div>
 
               <div className="space-y-6">
                 {form.sponsors.map((sponsor, index) => (
                   <div
                     key={index}
-                    className="bg-slate-50/50 border border-slate-150 rounded-2xl p-5 md:p-6 grid grid-cols-1 md:grid-cols-2 gap-5 relative hover:shadow-md transition duration-200"
+                    className="bg-slate-50/50 rounded-2xl p-5 md:p-6 grid grid-cols-1 md:grid-cols-2 gap-5 relative hover:shadow-md transition duration-200"
                   >
                     <div className="md:col-span-2 flex justify-between items-center">
                       <span className="bg-slate-200/60 text-slate-700 px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider">
@@ -991,45 +972,46 @@ export default function CreateEventModal({ open, onClose, onSuccess }) {
                   </div>
                 ))}
               </div>
+
+              <div className="flex justify-center pt-4">
+                <button
+                  type="button"
+                  onClick={() =>
+                    updateField("sponsors", [
+                      ...form.sponsors,
+                      {
+                        sponsor_name: "",
+                        website_url: "",
+                        display_order: form.sponsors.length + 1,
+                        logo: null,
+                      },
+                    ])
+                  }
+                  className="w-full inline-flex items-center justify-center gap-2 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-100 px-6 py-3 rounded-xl text-sm font-semibold transition cursor-pointer"
+                >
+                  + Add Sponsor
+                </button>
+              </div>
             </section>
           </div>
 
           {/* STEP 4: FEES & PRICING */}
           <div className={activeStep === 4 ? "space-y-6" : "hidden"}>
             <section className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 md:p-8">
-              <div className="flex items-center justify-between mb-6">
-                <div>
+              <div className="mb-6">
                   <h3 className="text-lg font-bold text-slate-800 border-l-4 border-blue-600 pl-3">
                     Fee Categories
                   </h3>
                   <p className="text-xs text-slate-400 mt-1">
                     Define different registration tiers and rates.
                   </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() =>
-                    updateField("fee_categories", [
-                      ...form.fee_categories,
-                      {
-                        category_name: "",
-                        fee: "",
-                        currency: "INR",
-                        display_order: 1,
-                      },
-                    ])
-                  }
-                  className="inline-flex items-center gap-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-100 px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer"
-                >
-                  + Add Fee Category
-                </button>
               </div>
 
               <div className="space-y-5">
                 {form.fee_categories.map((fee, index) => (
                   <div
                     key={index}
-                    className="bg-slate-50/50 border border-slate-150 rounded-2xl p-5 md:p-6 grid grid-cols-1 md:grid-cols-3 gap-5 relative hover:shadow-md transition duration-200"
+                    className="bg-slate-50/50 rounded-2xl p-5 md:p-6 grid grid-cols-1 md:grid-cols-3 gap-5 relative hover:shadow-md transition duration-200"
                   >
                     <div className="md:col-span-3 flex justify-between items-center">
                       <span className="bg-slate-200/60 text-slate-700 px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider">
@@ -1101,6 +1083,26 @@ export default function CreateEventModal({ open, onClose, onSuccess }) {
                     </div>
                   </div>
                 ))}
+              </div>
+
+              <div className="flex justify-center pt-4">
+                <button
+                  type="button"
+                  onClick={() =>
+                    updateField("fee_categories", [
+                      ...form.fee_categories,
+                      {
+                        category_name: "",
+                        fee: "",
+                        currency: "INR",
+                        display_order: 1,
+                      },
+                    ])
+                  }
+                  className="w-full inline-flex items-center justify-center gap-2 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-100 px-6 py-3 rounded-xl text-sm font-semibold transition cursor-pointer"
+                >
+                  + Add Fee Category
+                </button>
               </div>
             </section>
           </div>

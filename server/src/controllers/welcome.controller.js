@@ -2,6 +2,8 @@ import fs from "fs";
 import path from "path";
 import * as WelcomeService from "../services/welcome.service.js";
 
+
+
 export const getWelcome = async (req, res, next) => {
   try {
     const data = await WelcomeService.getWelcome();
@@ -13,6 +15,19 @@ export const getWelcome = async (req, res, next) => {
     next(err);
   }
 };
+
+export const createWelcome = async(req,res,next)=>{
+  try{
+    const data = await WelcomeService.createSection(req.body);
+    res.status(201).json({
+      success: true,
+      message: "Welcomesection created successfully",
+      data,
+    })
+  }catch(err){
+    next(err)
+  }
+}
 
 export const updateWelcome = async (req, res, next) => {
   try {
