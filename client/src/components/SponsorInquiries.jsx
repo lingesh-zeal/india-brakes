@@ -59,6 +59,10 @@ const SponsorInquiries = () => {
       ? inquiries
       : inquiries.filter((item) => item.status === statusFilter);
 
+  const pendingCount = inquiries.filter(
+    (item) => item.status ==="pending"
+  ).length;
+    
   return (
     <div className="bg-white rounded-3xl border border-slate-100 p-6 md:p-8 shadow-sm">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
@@ -90,7 +94,7 @@ const SponsorInquiries = () => {
               Requests
             </span>
             <span className="absolute -top-2 -right-2 min-w-6 h-6 px-1.5 flex items-center justify-center rounded-full bg-blue-600 text-white text-[10px] font-extrabold shadow-md shadow-blue-500/10">
-              {inquiries.length}
+              {pendingCount}
             </span>
           </div>
         </div>

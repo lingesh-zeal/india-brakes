@@ -116,14 +116,15 @@ export const updateCarouselImage = async (req, res, next) => {
 export const deleteCarouselImage = async (req, res, next) => {
   try {
 
-    const total = await WelcomeService.countImages();
-    if(total <=1){
-      return res.status(400).json({
-        success: false,
-        message: "At least one image must exist in carousel."
-      })
-    }
+    // const total = await WelcomeService.countImages();
+    // if(total <=1){
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: "At least one image must exist in carousel."
+    //   })
+    // }
     const image = await WelcomeService.getImage(req.params.id);
+    
     if (!image) {
       return res.status(404).json({
         success: false,
@@ -133,7 +134,12 @@ export const deleteCarouselImage = async (req, res, next) => {
 
     //Delete file form uploads folder
 
-    const imagePath = path.join(process.cwd(), "uploads", image.image);
+    const imagePath = path.join(
+      process.cwd(), 
+      "uploads", 
+      image.image
+    );
+    
     if (fs.existsSync(imagePath)) {
       fs.unlinkSync(imagePath);
     }

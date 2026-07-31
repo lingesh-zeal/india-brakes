@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { FaPlus, FaSave, FaImage } from "react-icons/fa";
+import { FaImage, FaPlus, FaSave } from "react-icons/fa";
 import { BASE_IMG } from "../api/api";
 import {
   addImage,
@@ -393,120 +393,115 @@ const saveWelcome = async () => {
             Carousel
         ================================= */}
 
-        <div className="mt-14">
-          <div className="flex justify-between items-center mb-8">
-            <div>
-              <h2
-                className="
-              text-3xl
-              font-bold
-              text-slate-900
-              "
-              >
-                Carousel Gallery
-              </h2>
+<div className="mt-14">
+  <div className="flex justify-between items-center mb-8">
+    <div>
+      <h2
+        className="
+        text-3xl
+        font-bold
+        text-slate-900
+        "
+      >
+        Carousel Gallery
+      </h2>
 
-              <p className="text-slate-500 mt-2">
-                {carousel.length} / 6 Images
-                {carousel.length === 1 && (
-                  <span className="ml-2 text-amber-600">Minimum Required</span>
-                )}
-              </p>
-            </div>
-          </div>
+      <p className="text-slate-500 mt-2">
+        {carousel.length} / 6 Images Allowed
+      </p>
+    </div>
+  </div>
+ {carousel.length === 0 && (
+  <div className="col-span-full text-center mb-6">
+    <FaImage
+      size={60}
+      className="mx-auto text-slate-300"
+    />
 
-          {carousel.length === 0 ? (
-            <div
-              className="
-            bg-white
-            rounded-3xl
-            shadow-xl
-            py-24
-            text-center
-            "
-            >
-              <FaImage size={60} className="mx-auto text-slate-300" />
+    <h3 className="mt-5 text-xl font-bold text-slate-700">
+      No Carousel Images
+    </h3>
 
-              <h3
-                className="
-              mt-6
-              text-xl
-              font-bold
-              "
-              >
-                No Carousel Images
-              </h3>
+    <p className="text-slate-500">
+      Upload your first image.
+    </p>
+  </div>
+)}
+  <div
+    className="
+    grid
+    md:grid-cols-2
+    xl:grid-cols-3
+    gap-8
+    "
+  >
+   
+    {/* Existing Images */}
+    {carousel.map((image) => (
+      <ImageCard
+        key={image.id}
+        image={image}
+        imageUrl={`${BASE_IMG}${image.image}`}
+        onEdit={() => setEditingImage(image)}
+        onDelete={() => setDeletingImage(image)}
+      />
+    ))}
 
-              <p className="text-slate-500 mt-2">Upload your first image.</p>
-            </div>
-          ) : (
-            <div
-              className="
-            grid
-            md:grid-cols-2
-            xl:grid-cols-3
-            gap-8
-            "
-            >
-              {carousel.map((image) => (
-                <ImageCard
-                  key={image.id}
-                  image={image}
-                  imageUrl={`${BASE_IMG}${image.image}`}
-                  onEdit={() => setEditingImage(image)}
-                  onDelete={
-                    carousel.length > 1 ? () => setDeletingImage(image) : null
-                  }
-                />
-              ))}
 
-              {carousel.length < 6 && (
-                <button
-                  onClick={() => setShowAddModal(true)}
-                  className="
-                  h-80
-                  bg-white
-                  rounded-3xl
-                  border-2
-                  border-dashed
-                  border-slate-300
-                  hover:border-blue-500
-                  hover:bg-blue-50
-                  transition
-                  flex
-                  flex-col
-                  justify-center
-                  items-center
-                  "
-                >
-                  <div
-                    className="
-                  w-20
-                  h-20
-                  rounded-full
-                  bg-blue-100
-                  flex
-                  items-center
-                  justify-center
-                  mb-5
-                  "
-                  >
-                    <FaPlus size={30} className="text-blue-600" />
-                  </div>
+    {/* Add Image Button */}
+    {carousel.length < 6 && (
+      <button
+        onClick={() => setShowAddModal(true)}
+        className="
+        h-80
+        bg-white
+        rounded-3xl
+        border-2
+        border-dashed
+        border-slate-300
+        hover:border-blue-500
+        hover:bg-blue-50
+        transition
+        flex
+        flex-col
+        justify-center
+        items-center
+        "
+      >
 
-                  <span
-                    className="
-                  font-semibold
-                  text-blue-600
-                  "
-                  >
-                    Add Image
-                  </span>
-                </button>
-              )}
-            </div>
-          )}
+        <div
+          className="
+          w-20
+          h-20
+          rounded-full
+          bg-blue-100
+          flex
+          items-center
+          justify-center
+          mb-5
+          "
+        >
+          <FaPlus
+            size={30}
+            className="text-blue-600"
+          />
         </div>
+
+
+        <span
+          className="
+          font-semibold
+          text-blue-600
+          "
+        >
+          Add Image
+        </span>
+
+      </button>
+    )}
+
+  </div>
+</div>
 
         {/* MODALS */}
 
@@ -782,7 +777,7 @@ function DeleteModal({ image, onCancel, onConfirm }) {
   const remove = async () => {
     setLoading(true);
 
-    await onConfirm();
+    await onConfirm(); 
     setLoading(false);
   };
 
