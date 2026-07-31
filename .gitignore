@@ -24,6 +24,3 @@ Thumbs.db
 # Editor
 .vscode/
 .idea/
-
-#uploads 
-server/uploads/
