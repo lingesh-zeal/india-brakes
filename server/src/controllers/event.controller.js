@@ -1103,30 +1103,33 @@ export const getGallery = async (req, res) => {
           ORDER BY ep.uploaded_at DESC
         ) AS photos
 
-        FROM events e
+      FROM events e
 
-        INNER JOIN event_photos ep
-          ON e.id = ep.event_id
+      INNER JOIN event_photos ep
+        ON e.id = ep.event_id
 
-        WHERE 
-          e.archived = FALSE
+      WHERE
+        e.status_id = 2
+        AND e.archived = FALSE
 
-        GROUP BY
-          e.id,
-          e.title,
-          e.slug
+      GROUP BY
+        e.id,
+        e.title,
+        e.slug,
+        e.event_date
 
-        ORDER BY
-         e.event_date DESC;
-      `,
+      ORDER BY
+        e.event_date DESC;
+      `
     );
+
     res.status(200).json({
       success: true,
       count: result.rows.length,
       data: result.rows,
     });
   } catch (error) {
-    console.error("Get Gallery Error: ", error);
+    console.error("Get Gallery Error:", error);
 
     res.status(500).json({
       success: false,
